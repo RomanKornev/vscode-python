@@ -132,5 +132,8 @@
     "DataScience.interruptKernel": "Interrupt iPython Kernel",
     "DataScience.exportingFormat" : "Exporting {0}",
     "DataScience.exportCancel" : "Cancel",
-    "Common.canceled" : "Canceled"
+    "Common.canceled" : "Canceled",
+    "DataScience.interruptKernelStatus" : "Interrupting iPython Kernel",
+    "DataScience.restartKernelAfterInterruptMessage" : "Interrupting the kernel timed out. Do you want to restart the kernel instead? All variables will be lost.",
+    "DataScience.pythonInterruptFailedHeader" : "Keyboard interrupt crashed the kernel. Kernel restarted."
 }

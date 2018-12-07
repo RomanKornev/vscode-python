@@ -166,10 +166,11 @@ export class DataScienceIocContainer extends UnitTestIocContainer {
         // Setup default settings
         pythonSettings.datascience = {
             allowImportFromNotebook: true,
-            jupyterLaunchTimeout: 60000,
+            jupyterLaunchTimeout: 20000,
             enabled: true,
             jupyterServerURI: 'local',
-            useDefaultConfigForJupyter: true
+            useDefaultConfigForJupyter: true,
+            jupyterInterruptTimeout: 10000
         };
 
         const workspaceConfig: TypeMoq.IMock<WorkspaceConfiguration> = TypeMoq.Mock.ofType<WorkspaceConfiguration>();
@@ -296,7 +297,7 @@ export class DataScienceIocContainer extends UnitTestIocContainer {
         workspaceService.setup(c => c.getConfiguration(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => workspaceConfig.object);
 
         // tslint:disable-next-line:no-empty
-        logger.setup(l => l.logInformation(TypeMoq.It.isAny())).returns((m) => {}); // console.log(m)); // REnable this to debug the server
+        logger.setup(l => l.logInformation(TypeMoq.It.isAny())).returns((m) => console.log(m));
     }
 
     public getContext(name: string) : boolean {

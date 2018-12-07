@@ -31,7 +31,7 @@ import { IAsyncDisposableRegistry, IConfigurationService, IDisposableRegistry, I
 import { Architecture } from '../../client/common/utils/platform';
 import { EXTENSION_ROOT_DIR } from '../../client/constants';
 import { JupyterExecution } from '../../client/datascience/jupyterExecution';
-import { ICell, IConnection, IJupyterKernelSpec, INotebookServer } from '../../client/datascience/types';
+import { ICell, IConnection, IJupyterKernelSpec, INotebookServer, InterruptResult } from '../../client/datascience/types';
 import { InterpreterType, PythonInterpreter } from '../../client/interpreter/contracts';
 import { InterpreterService } from '../../client/interpreter/interpreterService';
 import { CondaService } from '../../client/interpreter/locators/services/condaService';
@@ -81,7 +81,7 @@ class MockJupyterServer implements INotebookServer {
         noop();
     }
 
-    public interruptKernel() : Promise<void> {
+    public interruptKernel(timeout: number) : Promise<InterruptResult> {
         throw new Error('Method not implemented');
     }
 
@@ -419,7 +419,8 @@ suite('Jupyter Execution', async () => {
             jupyterLaunchTimeout: 10,
             enabled: true,
             jupyterServerURI: 'local',
-            useDefaultConfigForJupyter: true
+            useDefaultConfigForJupyter: true,
+            jupyterInterruptTimeout: 10000
         };
 
         // Service container also needs to generate jupyter servers. However we can't use a mock as that messes up returning

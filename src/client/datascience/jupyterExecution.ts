@@ -327,7 +327,7 @@ export class JupyterExecution implements IJupyterExecution, Disposable {
             // as starting jupyter with all of the defaults.
             const configFile = useDefaultConfig ? path.join(tempDir.path, 'jupyter_notebook_config.py') : undefined;
             if (configFile) {
-                await this.fileSystem.writeFile(configFile, {});
+                await this.fileSystem.writeFile(configFile, '');
             }
 
             // Use this temp file and config file to generate a list of args for our command
@@ -587,7 +587,7 @@ export class JupyterExecution implements IJupyterExecution, Disposable {
                 // Path match
                 score += 10;
             }
-            if (spec && spec.language.toLocaleLowerCase() === 'python') {
+            if (spec && spec.language && spec.language.toLocaleLowerCase() === 'python') {
                 // Language match
                 score += 1;
 
@@ -610,7 +610,7 @@ export class JupyterExecution implements IJupyterExecution, Disposable {
                             }
                         }
                     }
-                } else if (info && info.version_info && spec && spec.path.toLocaleLowerCase() === 'python') {
+                } else if (info && info.version_info && spec && spec.path && spec.path.toLocaleLowerCase() === 'python') {
                     // This should be our current python.
 
                     // Search for a digit on the end of the name. It should match our major version
