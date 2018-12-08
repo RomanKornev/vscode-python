@@ -77,8 +77,8 @@ class MockJupyterServer implements INotebookServer {
     public waitForIdle(): Promise<void> {
         throw new Error('Method not implemented');
     }
-    public shutdown() {
-        noop();
+    public async shutdown() {
+        return Promise.resolve();
     }
 
     public interruptKernel(timeout: number) : Promise<InterruptResult> {

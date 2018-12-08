@@ -38,8 +38,8 @@ import {
     IJupyterExecution,
     INotebookExporter,
     INotebookServer,
-    IStatusProvider,
-    InterruptResult
+    InterruptResult,
+    IStatusProvider
 } from './types';
 
 @injectable()
@@ -143,7 +143,7 @@ export class History implements IWebPanelMessageListener, IHistory {
             status.dispose();
 
             // We failed, dispose of ourselves too so that nobody uses us again
-            this.dispose();
+            this.dispose().ignoreErrors();
 
             throw err;
         }
@@ -212,13 +212,13 @@ export class History implements IWebPanelMessageListener, IHistory {
         }
     }
 
-    public dispose() {
+    public async dispose()  {
         if (!this.disposed) {
             this.disposed = true;
             this.settingsChangedDisposable.dispose();
             this.closedEvent.fire(this);
             if (this.jupyterServer) {
-                this.jupyterServer.shutdown();
+                await this.jupyterServer.shutdown();
             }
             this.updateContexts();
         }
@@ -270,7 +270,7 @@ export class History implements IWebPanelMessageListener, IHistory {
                     this.restartKernelInternal().catch(e => {
                         this.applicationShell.showErrorMessage(e);
                         this.logger.logError(e);
-                    })
+                    });
                 }
             });
         }
@@ -339,7 +339,6 @@ export class History implements IWebPanelMessageListener, IHistory {
             this.restartingKernel = false;
         }
     }
-
 
     // tslint:disable-next-line:no-any
     private handleReturnAllCells = (payload: any) => {
