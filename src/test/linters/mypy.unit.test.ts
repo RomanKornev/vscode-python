@@ -15,6 +15,7 @@ import { ILintMessage } from '../../client/linters/types';
 const output = `
 provider.pyi:10: error: Incompatible types in assignment (expression has type "str", variable has type "int")
 provider.pyi:11: error: Name 'not_declared_var' is not defined
+provider.pyi:12:21: error: Expression has type "Any"
 `;
 
 suite('Linting - MyPy', () => {
@@ -28,7 +29,7 @@ suite('Linting - MyPy', () => {
                 line: 10,
                 type: 'error',
                 provider: 'mypy'
-             } as ILintMessage],
+            } as ILintMessage],
             [lines[2], {
                 code: undefined,
                 message: 'Name \'not_declared_var\' is not defined',
@@ -36,7 +37,15 @@ suite('Linting - MyPy', () => {
                 line: 11,
                 type: 'error',
                 provider: 'mypy'
-             } as ILintMessage]
+            } as ILintMessage],
+            [lines[3], {
+                code: undefined,
+                message: 'Expression has type "Any"',
+                column: 21,
+                line: 12,
+                type: 'error',
+                provider: 'mypy'
+            } as ILintMessage]
         ];
         for (const [line, expected] of tests) {
             const msg = parseLine(line, REGEX, 'mypy');
