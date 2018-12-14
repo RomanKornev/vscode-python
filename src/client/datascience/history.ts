@@ -34,13 +34,21 @@ import {
     CellState,
     ICell,
     ICodeCssGenerator,
+    IConnection,
     IHistory,
     IHistoryInfo,
     IJupyterExecution,
     INotebookExporter,
     INotebookServer,
+    InterruptResult,
     IStatusProvider
 } from './types';
+
+export enum SysInfoReason {
+    Start,
+    Restart,
+    Interrupt
+}
 
 @injectable()
 export class History implements IWebPanelMessageListener, IHistory {
@@ -118,7 +126,7 @@ export class History implements IWebPanelMessageListener, IHistory {
             await this.show();
 
             // Add our sys info if necessary
-            await this.addInitialSysInfo();
+            await this.addSysInfo(SysInfoReason.Start);
 
             if (this.jupyterServer) {
                 // Before we try to execute code make sure that we have an initial directory set
@@ -148,7 +156,7 @@ export class History implements IWebPanelMessageListener, IHistory {
             status.dispose();
 
             // We failed, dispose of ourselves too so that nobody uses us again
-            this.dispose();
+            this.dispose().ignoreErrors();
 
             throw err;
         }
@@ -217,13 +225,13 @@ export class History implements IWebPanelMessageListener, IHistory {
         }
     }
 
-    public dispose() {
+    public async dispose()  {
         if (!this.disposed) {
             this.disposed = true;
             this.settingsChangedDisposable.dispose();
             this.closedEvent.fire(this);
             if (this.jupyterServer) {
-                this.jupyterServer.shutdown();
+                await this.jupyterServer.shutdown();
             }
             this.updateContexts();
         }
@@ -265,8 +273,6 @@ export class History implements IWebPanelMessageListener, IHistory {
     @captureTelemetry(Telemetry.RestartKernel)
     public restartKernel() {
         if (this.jupyterServer && !this.restartingKernel) {
-            this.restartingKernel = true;
-
             // Ask the user if they want us to restart or not.
             const message = localize.DataScience.restartKernelMessage();
             const yes = localize.DataScience.restartKernelMessageYes();
@@ -274,34 +280,10 @@ export class History implements IWebPanelMessageListener, IHistory {
 
             this.applicationShell.showInformationMessage(message, yes, no).then(v => {
                 if (v === yes) {
-                    // First we need to finish all outstanding cells.
-                    this.unfinishedCells.forEach(c => {
-                        c.state = CellState.error;
-                        if (this.webPanel) {
-                            this.webPanel.postMessage({ type: HistoryMessages.FinishCell, payload: c });
-                        }
+                    this.restartKernelInternal().catch(e => {
+                        this.applicationShell.showErrorMessage(e);
+                        this.logger.logError(e);
                     });
-                    this.unfinishedCells = [];
-                    this.potentiallyUnfinishedStatus.forEach(s => s.dispose());
-                    this.potentiallyUnfinishedStatus = [];
-
-                    // Set our status
-                    const status = this.statusProvider.set(localize.DataScience.restartingKernelStatus(), this);
-
-                    // Then restart the kernel. When that finishes, add our sys info again
-                    if (this.jupyterServer) {
-                        this.jupyterServer.restartKernel()
-                            .then(() => {
-                                this.addRestartSysInfo().then(status.dispose()).ignoreErrors();
-                            })
-                            .catch(err => {
-                                this.logger.logError(err);
-                                status.dispose();
-                            });
-                    }
-                    this.restartingKernel = false;
-                } else {
-                    this.restartingKernel = false;
                 }
             });
         }
@@ -310,11 +292,65 @@ export class History implements IWebPanelMessageListener, IHistory {
     @captureTelemetry(Telemetry.Interrupt)
     public interruptKernel() {
         if (this.jupyterServer && !this.restartingKernel) {
-            this.jupyterServer.interruptKernel()
-                .then()
+            const status = this.statusProvider.set(localize.DataScience.interruptKernelStatus());
+
+            const settings = this.configuration.getSettings();
+            const interruptTimeout = settings.datascience.jupyterInterruptTimeout;
+
+            this.jupyterServer.interruptKernel(interruptTimeout)
+                .then(result => {
+                    status.dispose();
+                    if (result === InterruptResult.TimedOut) {
+                        const message = localize.DataScience.restartKernelAfterInterruptMessage();
+                        const yes = localize.DataScience.restartKernelMessageYes();
+                        const no = localize.DataScience.restartKernelMessageNo();
+
+                        this.applicationShell.showInformationMessage(message, yes, no).then(v => {
+                            if (v === yes) {
+                                this.restartKernelInternal().catch(e => {
+                                    this.applicationShell.showErrorMessage(e);
+                                    this.logger.logError(e);
+                                });
+                            }
+                        });
+                    } else if (result === InterruptResult.Restarted) {
+                        // Uh-oh, keyboard interrupt crashed the kernel.
+                        this.addSysInfo(SysInfoReason.Interrupt).ignoreErrors();
+                    }
+                })
                 .catch(err => {
+                    status.dispose();
                     this.logger.logError(err);
+                    this.applicationShell.showErrorMessage(err);
                 });
+        }
+    }
+
+    private async restartKernelInternal() : Promise<void> {
+        this.restartingKernel = true;
+
+        // First we need to finish all outstanding cells.
+        this.unfinishedCells.forEach(c => {
+            c.state = CellState.error;
+            if (this.webPanel) {
+                this.webPanel.postMessage({ type: HistoryMessages.FinishCell, payload: c });
+            }
+        });
+        this.unfinishedCells = [];
+        this.potentiallyUnfinishedStatus.forEach(s => s.dispose());
+        this.potentiallyUnfinishedStatus = [];
+
+        // Set our status
+        const status = this.statusProvider.set(localize.DataScience.restartingKernelStatus());
+
+        try {
+            if (this.jupyterServer) {
+                await this.jupyterServer.restartKernel();
+                await this.addSysInfo(SysInfoReason.Restart);
+            }
+        } finally {
+            status.dispose();
+            this.restartingKernel = false;
         }
     }
 
@@ -351,7 +387,7 @@ export class History implements IWebPanelMessageListener, IHistory {
     }
 
     private setStatus = (message: string) : Disposable => {
-        const result = this.statusProvider.set(message, this);
+        const result = this.statusProvider.set(message);
         this.potentiallyUnfinishedStatus.push(result);
         return result;
     }
@@ -525,7 +561,7 @@ export class History implements IWebPanelMessageListener, IHistory {
 
             // If this is a restart, show our restart info
             if (restart) {
-                await this.addRestartSysInfo();
+                await this.addSysInfo(SysInfoReason.Restart);
             }
         } finally {
             if (status) {
@@ -590,10 +626,11 @@ export class History implements IWebPanelMessageListener, IHistory {
         return result;
     }
 
-    private generateSysInfoCell = async (message: string) : Promise<ICell | undefined> => {
+    private generateSysInfoCell = async (reason: SysInfoReason) : Promise<ICell | undefined> => {
         // Execute the code 'import sys\r\nsys.version' and 'import sys\r\nsys.executable' to get our
         // version and executable
         if (this.jupyterServer) {
+            const message = await this.generateSysInfoMessage(reason);
             // tslint:disable-next-line:no-multiline-string
             const versionCells = await this.jupyterServer.execute(`import sys\r\nsys.version`, 'foo.py', 0);
             // tslint:disable-next-line:no-multiline-string
@@ -609,6 +646,12 @@ export class History implements IWebPanelMessageListener, IHistory {
             // Both should influence our ignore count. We don't want them to count against execution
             this.ignoreCount = this.ignoreCount + 3;
 
+            // Connection string only for our initial start, not restart or interrupt
+            let connectionString: string = '';
+            if (reason === SysInfoReason.Start) {
+                connectionString = this.generateConnectionInfoString(this.jupyterServer.getConnectionInfo());
+            }
+
             // Combine this data together to make our sys info
             return {
                 data: {
@@ -617,6 +660,7 @@ export class History implements IWebPanelMessageListener, IHistory {
                     version: version,
                     notebook_version: localize.DataScience.notebookVersionFormat().format(notebookVersion),
                     path: pythonPath,
+                    connection: connectionString,
                     metadata: {},
                     source: []
                 },
@@ -628,28 +672,46 @@ export class History implements IWebPanelMessageListener, IHistory {
         }
     }
 
-    private addInitialSysInfo = async () : Promise<void> => {
-        // Message depends upon if ipykernel is supported or not.
-        if (!(await this.jupyterExecution.isKernelCreateSupported())) {
-            return this.addSysInfo(localize.DataScience.pythonVersionHeaderNoPyKernel());
+    private async generateSysInfoMessage(reason: SysInfoReason): Promise<string> {
+        switch (reason) {
+            case SysInfoReason.Start:
+                    // Message depends upon if ipykernel is supported or not.
+                    if (!(await this.jupyterExecution.isKernelCreateSupported())) {
+                        return localize.DataScience.pythonVersionHeaderNoPyKernel();
+                    }
+                    return localize.DataScience.pythonVersionHeader();
+                    break;
+            case SysInfoReason.Restart:
+                    return localize.DataScience.pythonRestartHeader();
+                    break;
+            case SysInfoReason.Interrupt:
+                    return localize.DataScience.pythonInterruptFailedHeader();
+                    break;
+            default:
+                    this.logger.logError('Invalid SysInfoReason');
+                    return '';
+                    break;
+        }
+    }
+
+    private generateConnectionInfoString(connInfo: IConnection | undefined): string {
+        if (!connInfo) {
+            return '';
         }
 
-        return this.addSysInfo(localize.DataScience.pythonVersionHeader());
+        const tokenString = connInfo.token.length > 0 ? `?token=${connInfo.token}` : '';
+        const urlString = `${connInfo.baseUrl}${tokenString}`;
+
+        return `${localize.DataScience.sysInfoURILabel()}${urlString}`;
     }
 
-    private addRestartSysInfo = () : Promise<void> => {
-        this.addedSysInfo = false;
-        return this.addSysInfo(localize.DataScience.pythonRestartHeader());
-    }
-
-    private addSysInfo = async (message: string) : Promise<void> => {
-        // Add our sys info if necessary
-        if (!this.addedSysInfo) {
+    private addSysInfo = async (reason: SysInfoReason) : Promise<void> => {
+        if (!this.addedSysInfo || reason === SysInfoReason.Interrupt || reason === SysInfoReason.Restart) {
             this.addedSysInfo = true;
             this.ignoreCount = 0;
 
             // Generate a new sys info cell and send it to the web panel.
-            const sysInfo = await this.generateSysInfoCell(message);
+            const sysInfo = await this.generateSysInfoCell(reason);
             if (sysInfo) {
                 this.onAddCodeEvent([sysInfo]);
             }

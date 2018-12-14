@@ -138,6 +138,16 @@ export class HistoryCommandListener implements IDataScienceCommandListener {
                             await this.fileSystem.writeFile(uri.fsPath, JSON.stringify(notebook));
                         }
                     }, localize.DataScience.exportingFormat(), file);
+
+                    // When all done, show a notice that it completed.
+                    const openQuestion = localize.DataScience.exportOpenQuestion();
+                    this.applicationShell.showInformationMessage(localize.DataScience.exportDialogComplete().format(uri.fsPath), openQuestion).then((str: string | undefined) => {
+                        if (str === openQuestion) {
+                            // If the user wants to, open the notebook they just generated.
+                            this.jupyterExecution.spawnNotebook(uri.fsPath).ignoreErrors();
+                        }
+                    });
+
                 }
             }
         }
@@ -232,35 +242,59 @@ export class HistoryCommandListener implements IDataScienceCommandListener {
     }
 
     private undoCells() {
-        this.historyProvider.getActive()!.undoCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.undoCells();
+        }
     }
 
     private redoCells() {
-        this.historyProvider.getActive()!.redoCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.redoCells();
+        }
     }
 
     private removeAllCells() {
-        this.historyProvider.getActive()!.removeAllCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.removeAllCells();
+        }
     }
 
     private interruptKernel() {
-        this.historyProvider.getActive()!.interruptKernel();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.interruptKernel();
+        }
     }
 
     private restartKernel() {
-        this.historyProvider.getActive()!.restartKernel();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.restartKernel();
+        }
     }
 
     private expandAllCells() {
-        this.historyProvider.getActive()!.expandAllCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.expandAllCells();
+        }
     }
 
     private collapseAllCells() {
-        this.historyProvider.getActive()!.collapseAllCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.collapseAllCells();
+        }
     }
 
     private exportCells() {
-        this.historyProvider.getActive()!.exportCells();
+        const history = this.historyProvider.getActive();
+        if (history) {
+            history.exportCells();
+        }
     }
 
     private canImportFromOpenedFile = () => {
@@ -306,7 +340,7 @@ export class HistoryCommandListener implements IDataScienceCommandListener {
 
     private waitForStatus<T>(promise: () => Promise<T>, format: string, file?: string, canceled?: () => void) : Promise<T> {
         const message = file ? format.format(file) : format;
-        return this.statusProvider.waitWithStatus(promise, message, undefined, undefined, canceled);
+        return this.statusProvider.waitWithStatus(promise, message, undefined, canceled);
     }
 
     @captureTelemetry(Telemetry.ImportNotebook, { scope: 'command' }, false)

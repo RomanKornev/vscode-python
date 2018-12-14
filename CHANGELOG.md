@@ -1,5 +1,122 @@
 # Changelog
 
+## 2018.12.0-rc (12 Dec 2018)
+
+### Thanks
+
+Thanks to the following projects which we fully rely on to provide some of
+our features:
+- [isort 4.3.4](https://pypi.org/project/isort/4.3.4/)
+- [jedi 0.12.0](https://pypi.org/project/jedi/0.12.0/)
+  and [parso 0.2.1](https://pypi.org/project/parso/0.2.1/)
+- [Microsoft Python Language Server](https://github.com/microsoft/python-language-server)
+- [ptvsd](https://pypi.org/project/ptvsd/)
+- [exuberant ctags](http://ctags.sourceforge.net/) (user-installed)
+- [rope](https://pypi.org/project/rope/) (user-installed)
+
+Also thanks to the various projects we provide integrations with which help
+make this extension useful:
+- Debugging support:
+  [Django](https://pypi.org/project/Django/),
+  [Flask](https://pypi.org/project/Flask/),
+  [gevent](https://pypi.org/project/gevent/),
+  [Jinja](https://pypi.org/project/Jinja/),
+  [Pyramid](https://pypi.org/project/pyramid/),
+  [PySpark](https://pypi.org/project/pyspark/),
+  [Scrapy](https://pypi.org/project/Scrapy/),
+  [Watson](https://pypi.org/project/Watson/)
+- Formatting:
+  [autopep8](https://pypi.org/project/autopep8/),
+  [black](https://pypi.org/project/black/),
+  [yapf](https://pypi.org/project/yapf/)
+- Interpreter support:
+  [conda](https://conda.io/),
+  [direnv](https://direnv.net/),
+  [pipenv](https://pypi.org/project/pipenv/),
+  [pyenv](https://github.com/pyenv/pyenv),
+  [venv](https://docs.python.org/3/library/venv.html#module-venv),
+  [virtualenv](https://pypi.org/project/virtualenv/)
+- Linting:
+  [bandit](https://pypi.org/project/bandit/),
+  [flake8](https://pypi.org/project/flake8/),
+  [mypy](https://pypi.org/project/mypy/),
+  [prospector](https://pypi.org/project/prospector/),
+  [pylint](https://pypi.org/project/pylint/),
+  [pydocstyle](https://pypi.org/project/pydocstyle/),
+  [pylama](https://pypi.org/project/pylama/)
+- Testing:
+  [nose](https://pypi.org/project/nose/),
+  [pytest](https://pypi.org/project/pytest/),
+  [unittest](https://docs.python.org/3/library/unittest.html#module-unittest)
+
+And finally thanks to the [Python](https://www.python.org/) development team and
+community for creating a fantastic programming language and community to be a
+part of!
+
+### Enhancements
+
+1. Load the language server in the background during extension activation.
+   ([#3020](https://github.com/Microsoft/vscode-python/issues/3020))
+1. Display progress indicator when activating the language server and validating user setup.
+   ([#3082](https://github.com/Microsoft/vscode-python/issues/3082))
+1. Allow for connection to a remote Jupyter server.
+   ([#3316](https://github.com/Microsoft/vscode-python/issues/3316))
+1. Allow users to request the 'Install missing Linter' prompt to not show again for pylint.
+   ([#3349](https://github.com/Microsoft/vscode-python/issues/3349))
+
+### Fixes
+
+1. Updated logic used to determine whether the Language Server is supported.
+   ([#2729](https://github.com/Microsoft/vscode-python/issues/2729))
+1. Add export from the Python interactive window as a notebook file.
+   ([#3109](https://github.com/Microsoft/vscode-python/issues/3109))
+1. Fix issue with the `unittest` runner where test suite/module initialization methods were not for a single test method.
+   (thanks [Alex Yu](https://github.com/alexander-yu))
+   ([#3295](https://github.com/Microsoft/vscode-python/issues/3295))
+1. Activate `conda` prior to running `jupyter` for the Python interactive window.
+   ([#3341](https://github.com/Microsoft/vscode-python/issues/3341))
+1. Respect value defined for `pylintEnabled` in user `settings.json`.
+   ([#3388](https://github.com/Microsoft/vscode-python/issues/3388))
+1. Expand variables in `pythonPath` before validating it.
+   ([#3392](https://github.com/Microsoft/vscode-python/issues/3392))
+1. Clear cached display name of Python if interpreter changes.
+   ([#3406](https://github.com/Microsoft/vscode-python/issues/3406))
+1. Run in the workspace directory by default for the interactive window.
+   ([#3407](https://github.com/Microsoft/vscode-python/issues/3407))
+1. Create a default config when starting a local `jupyter` server to resolve potential conflicts with user's custom configuration.
+   ([#3475](https://github.com/Microsoft/vscode-python/issues/3475))
+1. Add support for running Python interactive commands from the command palette.
+   ([#3476](https://github.com/Microsoft/vscode-python/issues/3476))
+1. Handle interrupts crashing the kernel.
+   ([#3511](https://github.com/Microsoft/vscode-python/issues/3511))
+1. Revert `ctags` argument from `--extras` to `--extra`.
+   ([#3517](https://github.com/Microsoft/vscode-python/issues/3517))
+1. Fix problems with `jupyter` startup related to custom configurations.
+   ([#3533](https://github.com/Microsoft/vscode-python/issues/3533))
+1. Fix crash when `kernelspec` is missing path or language.
+   ([#3561](https://github.com/Microsoft/vscode-python/issues/3561))
+1. Update the Microsoft Python language server to 0.1.72/[2018.12.1](https://github.com/Microsoft/python-language-server/releases/tag/2018.12.1) ([#3657](https://github.com/Microsoft/vscode-python/issues/3657)):
+   * Properly resolve namespace packages and relative imports.
+   * `Go to Definition` now supports namespace packages.
+   * Fixed `null` reference exceptions.
+   * Fixed erroneously reporting `None`, `True`, and `False` as undefined.
+
+
+### Code Health
+
+1. Pin python dependencies bundled with the extension in a `requirements.txt` file.
+   ([#2965](https://github.com/Microsoft/vscode-python/issues/2965))
+1. Remove scripts that bundled the extension using the old way, without webpack.
+   ([#3479](https://github.com/Microsoft/vscode-python/issues/3479))
+1. Fix environment variable token in Azure DevOps YAML.
+   ([#3630](https://github.com/Microsoft/vscode-python/issues/3630))
+1. Add missing imports and enable functional tests.
+   ([#3649](https://github.com/Microsoft/vscode-python/issues/3649))
+1. Enable code coverage for unit tests and functional tests.
+   ([#3650](https://github.com/Microsoft/vscode-python/issues/3650))
+1. Add logging for improved diagnostics.
+   ([#3460](https://github.com/Microsoft/vscode-python/issues/3460))
+
 ## 2018.11.0 (29 Nov 2018)
 
 ### Thanks

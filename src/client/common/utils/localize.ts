@@ -17,12 +17,13 @@ export namespace Diagnostics {
 
 export namespace Common {
     export const canceled = localize('Common.canceled', 'Canceled');
+    export const loadingExtension = localize('Common.loadingPythonExtension', 'Python extension loading...');
 }
 
-export namespace LanguageServiceSurveyBanner {
-    export const bannerMessage = localize('LanguageServiceSurveyBanner.bannerMessage', 'Can you please take 2 minutes to tell us how the Python Language Server is working for you?');
-    export const bannerLabelYes = localize('LanguageServiceSurveyBanner.bannerLabelYes', 'Yes, take survey now');
-    export const bannerLabelNo = localize('LanguageServiceSurveyBanner.bannerLabelNo', 'No, thanks');
+export namespace LanguageService {
+    export const bannerMessage = localize('LanguageService.bannerMessage', 'Can you please take 2 minutes to tell us how the Python Language Server is working for you?');
+    export const bannerLabelYes = localize('LanguageService.bannerLabelYes', 'Yes, take survey now');
+    export const bannerLabelNo = localize('LanguageService.bannerLabelNo', 'No, thanks');
 }
 
 export namespace Interpreters {
@@ -97,7 +98,11 @@ export namespace DataScience {
     export const jupyterKernelNotSupportedOnActive = localize('DataScience.jupyterKernelNotSupportedOnActive', `iPython kernel cannot be started from '{0}'. Using closest match {1} instead.`);
     export const jupyterKernelSpecNotFound = localize('DataScience.jupyterKernelSpecNotFound', 'Cannot create a iPython kernel spec and none are available for use');
     export const interruptKernel = localize('DataScience.interruptKernel', 'Interrupt iPython Kernel');
+    export const interruptKernelStatus = localize('DataScience.interruptKernelStatus', 'Interrupting iPython Kernel');
     export const exportCancel = localize('DataScience.exportCancel', 'Cancel');
+    export const restartKernelAfterInterruptMessage = localize('DataScience.restartKernelAfterInterruptMessage', 'Interrupting the kernel timed out. Do you want to restart the kernel instead? All variables will be lost.');
+    export const pythonInterruptFailedHeader = localize('DataScience.pythonInterruptFailedHeader', 'Keyboard interrupt crashed the kernel. Kernel restarted.');
+    export const sysInfoURILabel = localize('DataScience.sysInfoURILabel', 'Jupyter Server URI: ');
 }
 
 // Skip using vscode-nls and instead just compute our strings based on key values. Key values
