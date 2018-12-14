@@ -18,7 +18,8 @@
         "url": "https://github.com/Microsoft/vscode-python/issues"
     },
     "qna": "https://stackoverflow.com/questions/tagged/visual-studio-code+python",
-    "badges": [{
+    "badges": [
+        {
             "url": "https://vscode-python.visualstudio.com/VSCode-Python/_apis/build/status/VSCode-Python-Rolling-CI?branchName=master",
             "href": "https://vscode-python.visualstudio.com/VSCode-Python/VSCode-Python%20Team/_build/index?context=allDefinitions&path=&definitionId=9",
             "description": "Continuous integration (VSTS)"
@@ -91,11 +92,14 @@
     ],
     "main": "./out/client/extension",
     "contributes": {
-        "snippets": [{
-            "language": "python",
-            "path": "./snippets/python.json"
-        }],
-        "keybindings": [{
+        "snippets": [
+            {
+                "language": "python",
+                "path": "./snippets/python.json"
+            }
+        ],
+        "keybindings": [
+            {
                 "command": "python.execSelectionInTerminal",
                 "key": "shift+enter",
                 "when": "editorFocus && editorLangId == python && !findInputFocussed && !replaceInputFocussed && !python.datascience.hascodecells"
@@ -106,7 +110,8 @@
                 "when": "editorFocus && python.datascience.hascodecells && python.datascience.featureenabled"
             }
         ],
-        "commands": [{
+        "commands": [
+            {
                 "command": "python.enableSourceMapSupport",
                 "title": "%python.command.python.enableSourceMapSupport.title%",
                 "category": "Python"
@@ -324,7 +329,8 @@
             }
         ],
         "menus": {
-            "editor/context": [{
+            "editor/context": [
+                {
                     "command": "python.refactorExtractVariable",
                     "title": "Refactor: Extract Variable",
                     "group": "Refactor",
@@ -388,7 +394,8 @@
                     "group": "Python2@2"
                 }
             ],
-            "explorer/context": [{
+            "explorer/context": [
+                {
                     "when": "resourceLangId == python",
                     "command": "python.runtests",
                     "group": "Python"
@@ -409,7 +416,8 @@
                     "group": "Python"
                 }
             ],
-            "commandPalette": [{
+            "commandPalette": [
+                {
                     "command": "python.datascience.runcurrentcell",
                     "title": "%python.command.python.datascience.runcurrentcell.title%",
                     "category": "Python",
@@ -506,83 +514,422 @@
                 }
             ]
         },
-        "debuggers": [{
-            "type": "python",
-            "label": "Python",
-            "languages": [
-                "python"
-            ],
-            "enableBreakpointsFor": {
-                "languageIds": [
-                    "python",
-                    "html",
-                    "jinja"
-                ]
-            },
-            "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
-            "program": "./out/client/debugger/debugAdapter/main.js",
-            "runtime": "node",
-            "configurationSnippets": [{
-                    "label": "Python: Terminal (integrated)",
-                    "description": "%python.snippet.launch.terminal.description%",
-                    "body": {
-                        "name": "Python: Terminal (integrated)",
+        "debuggers": [
+            {
+                "type": "python",
+                "label": "Python",
+                "languages": [
+                    "python"
+                ],
+                "enableBreakpointsFor": {
+                    "languageIds": [
+                        "python",
+                        "html",
+                        "jinja"
+                    ]
+                },
+                "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+                "program": "./out/client/debugger/debugAdapter/main.js",
+                "runtime": "node",
+                "configurationSnippets": [
+                    {
+                        "label": "Python: Terminal (integrated)",
+                        "description": "%python.snippet.launch.terminal.description%",
+                        "body": {
+                            "name": "Python: Terminal (integrated)",
+                            "type": "python",
+                            "request": "launch",
+                            "program": "^\"\\${file}\"",
+                            "console": "integratedTerminal"
+                        }
+                    },
+                    {
+                        "label": "Python: Terminal (external)",
+                        "description": "%python.snippet.launch.externalTerminal.description%",
+                        "body": {
+                            "name": "Python: Terminal (external)",
+                            "type": "python",
+                            "request": "launch",
+                            "program": "^\"\\${file}\"",
+                            "console": "externalTerminal"
+                        }
+                    },
+                    {
+                        "label": "Python: Module",
+                        "description": "%python.snippet.launch.module.description%",
+                        "body": {
+                            "name": "Python: Module",
+                            "type": "python",
+                            "request": "launch",
+                            "module": "enter-your-module-name-here",
+                            "console": "integratedTerminal"
+                        }
+                    },
+                    {
+                        "label": "Python: Django",
+                        "description": "%python.snippet.launch.django.description%",
+                        "body": {
+                            "name": "Django",
+                            "type": "python",
+                            "request": "launch",
+                            "program": "^\"\\${workspaceFolder}/manage.py\"",
+                            "args": [
+                                "runserver",
+                                "--noreload",
+                                "--nothreading"
+                            ],
+                            "django": true
+                        }
+                    },
+                    {
+                        "label": "Python: Flask",
+                        "description": "%python.snippet.launch.flask.description%",
+                        "body": {
+                            "name": "Flask",
+                            "type": "python",
+                            "request": "launch",
+                            "module": "flask",
+                            "env": {
+                                "FLASK_APP": "app.py",
+                                "FLASK_ENV": "development",
+                                "FLASK_DEBUG": "0"
+                            },
+                            "args": [
+                                "run",
+                                "--no-debugger",
+                                "--no-reload"
+                            ],
+                            "jinja": true
+                        }
+                    },
+                    {
+                        "label": "Python: Gevent",
+                        "description": "%python.snippet.launch.gevent.description%",
+                        "body": {
+                            "name": "Gevent",
+                            "type": "python",
+                            "request": "launch",
+                            "program": "^\"\\${file}\"",
+                            "gevent": true
+                        }
+                    },
+                    {
+                        "label": "Python: PySpark",
+                        "description": "%python.snippet.launch.pyspark.description%",
+                        "body": {
+                            "name": "PySpark",
+                            "type": "python",
+                            "request": "launch",
+                            "osx": {
+                                "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit\""
+                            },
+                            "windows": {
+                                "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit.cmd\""
+                            },
+                            "linux": {
+                                "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit\""
+                            },
+                            "program": "^\"\\${file}\""
+                        }
+                    },
+                    {
+                        "label": "Python: Watson",
+                        "description": "%python.snippet.launch.watson.description%",
+                        "body": {
+                            "name": "Watson",
+                            "type": "python",
+                            "request": "launch",
+                            "program": "^\"\\${workspaceFolder}/console.py\"",
+                            "args": [
+                                "dev",
+                                "runserver",
+                                "--noreload=True"
+                            ],
+                            "jinja": true
+                        }
+                    },
+                    {
+                        "label": "Python: Scrapy",
+                        "description": "%python.snippet.launch.scrapy.description%",
+                        "body": {
+                            "name": "Scrapy",
+                            "type": "python",
+                            "request": "launch",
+                            "module": "scrapy",
+                            "args": [
+                                "crawl",
+                                "specs",
+                                "-o",
+                                "bikes.json"
+                            ]
+                        }
+                    },
+                    {
+                        "label": "Python: Pyramid",
+                        "description": "%python.snippet.launch.pyramid.description%",
+                        "body": {
+                            "name": "Pyramid",
+                            "type": "python",
+                            "request": "launch",
+                            "args": [
+                                "^\"\\${workspaceFolder}/development.ini\""
+                            ],
+                            "pyramid": true,
+                            "jinja": true
+                        }
+                    },
+                    {
+                        "label": "Python: Attach",
+                        "description": "%python.snippet.launch.attach.description%",
+                        "body": {
+                            "name": "Attach (Remote Debug)",
+                            "type": "python",
+                            "request": "attach",
+                            "port": 5678,
+                            "host": "localhost"
+                        }
+                    }
+                ],
+                "configurationAttributes": {
+                    "launch": {
+                        "properties": {
+                            "module": {
+                                "type": "string",
+                                "description": "Name of the module to be debugged.",
+                                "default": ""
+                            },
+                            "program": {
+                                "type": "string",
+                                "description": "Absolute path to the program.",
+                                "default": "${file}"
+                            },
+                            "pythonPath": {
+                                "type": "string",
+                                "description": "Path (fully qualified) to python executable. Defaults to the value in settings.json",
+                                "default": "${config:python.pythonPath}"
+                            },
+                            "args": {
+                                "type": "array",
+                                "description": "Command line arguments passed to the program",
+                                "default": [],
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "stopOnEntry": {
+                                "type": "boolean",
+                                "description": "Automatically stop after launch.",
+                                "default": false
+                            },
+                            "showReturnValue": {
+                                "type": "boolean",
+                                "description": "Show return value of functions when stepping.",
+                                "default": false
+                            },
+                            "console": {
+                                "enum": [
+                                    "none",
+                                    "integratedTerminal",
+                                    "externalTerminal"
+                                ],
+                                "description": "Where to launch the debug target: internal console, integrated terminal, or external terminal.",
+                                "default": "integratedTerminal"
+                            },
+                            "cwd": {
+                                "type": "string",
+                                "description": "Absolute path to the working directory of the program being debugged. Default is the root directory of the file (leave empty).",
+                                "default": "${workspaceFolder}"
+                            },
+                            "env": {
+                                "type": "object",
+                                "description": "Environment variables defined as a key value pair. Property ends up being the Environment Variable and the value of the property ends up being the value of the Env Variable.",
+                                "default": {}
+                            },
+                            "envFile": {
+                                "type": "string",
+                                "description": "Absolute path to a file containing environment variable definitions.",
+                                "default": "${workspaceFolder}/.env"
+                            },
+                            "port": {
+                                "type": "number",
+                                "description": "Debug port (default is 0, resulting in the use of a dynamic port).",
+                                "default": 0
+                            },
+                            "host": {
+                                "type": "string",
+                                "description": "IP address of the of the local debug server (default is localhost).",
+                                "default": "localhost"
+                            },
+                            "logToFile": {
+                                "type": "boolean",
+                                "description": "Enable logging of debugger events to a log file.",
+                                "default": false
+                            },
+                            "redirectOutput": {
+                                "type": "boolean",
+                                "description": "Redirect output.",
+                                "default": true
+                            },
+                            "debugStdLib": {
+                                "type": "boolean",
+                                "description": "Debug standard library code.",
+                                "default": false
+                            },
+                            "gevent": {
+                                "type": "boolean",
+                                "description": "Enable debugging of gevent monkey-patched code.",
+                                "default": false
+                            },
+                            "django": {
+                                "type": "boolean",
+                                "description": "Django debugging.",
+                                "default": false
+                            },
+                            "jinja": {
+                                "enum": [
+                                    true,
+                                    false,
+                                    null
+                                ],
+                                "description": "Jinja template debugging (e.g. Flask).",
+                                "default": null
+                            },
+                            "sudo": {
+                                "type": "boolean",
+                                "description": "Running debug program under elevated permissions (on Unix).",
+                                "default": false
+                            },
+                            "pyramid": {
+                                "type": "boolean",
+                                "description": "Whether debugging Pyramid applications",
+                                "default": false
+                            },
+                            "subProcess": {
+                                "type": "boolean",
+                                "description": "Whether to enable Sub Process debugging",
+                                "default": false
+                            }
+                        }
+                    },
+                    "attach": {
+                        "required": [
+                            "port"
+                        ],
+                        "properties": {
+                            "port": {
+                                "type": "number",
+                                "description": "Debug port to attach",
+                                "default": 0
+                            },
+                            "host": {
+                                "type": "string",
+                                "description": "IP Address of the of remote server (default is localhost or use 127.0.0.1).",
+                                "default": "localhost"
+                            },
+                            "pathMappings": {
+                                "type": "array",
+                                "label": "Path mappings.",
+                                "items": {
+                                    "type": "object",
+                                    "label": "Path mapping",
+                                    "required": [
+                                        "localRoot",
+                                        "remoteRoot"
+                                    ],
+                                    "properties": {
+                                        "localRoot": {
+                                            "type": "string",
+                                            "label": "Local source root.",
+                                            "default": "${workspaceFolder}"
+                                        },
+                                        "remoteRoot": {
+                                            "type": "string",
+                                            "label": "Remote source root.",
+                                            "default": ""
+                                        }
+                                    }
+                                },
+                                "default": []
+                            },
+                            "logToFile": {
+                                "type": "boolean",
+                                "description": "Enable logging of debugger events to a log file.",
+                                "default": false
+                            },
+                            "redirectOutput": {
+                                "type": "boolean",
+                                "description": "Redirect output.",
+                                "default": true
+                            },
+                            "debugStdLib": {
+                                "type": "boolean",
+                                "description": "Debug standard library code.",
+                                "default": false
+                            },
+                            "django": {
+                                "type": "boolean",
+                                "description": "Django debugging.",
+                                "default": false
+                            },
+                            "jinja": {
+                                "enum": [
+                                    true,
+                                    false,
+                                    null
+                                ],
+                                "description": "Jinja template debugging (e.g. Flask).",
+                                "default": null
+                            },
+                            "subProcess": {
+                                "type": "boolean",
+                                "description": "Whether to enable Sub Process debugging",
+                                "default": false
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "name": "Python: Current File (Integrated Terminal)",
                         "type": "python",
                         "request": "launch",
-                        "program": "^\"\\${file}\"",
+                        "program": "${file}",
                         "console": "integratedTerminal"
-                    }
-                },
-                {
-                    "label": "Python: Terminal (external)",
-                    "description": "%python.snippet.launch.externalTerminal.description%",
-                    "body": {
-                        "name": "Python: Terminal (external)",
+                    },
+                    {
+                        "name": "Python: Attach",
                         "type": "python",
-                        "request": "launch",
-                        "program": "^\"\\${file}\"",
-                        "console": "externalTerminal"
-                    }
-                },
-                {
-                    "label": "Python: Module",
-                    "description": "%python.snippet.launch.module.description%",
-                    "body": {
+                        "request": "attach",
+                        "port": 5678,
+                        "host": "localhost"
+                    },
+                    {
                         "name": "Python: Module",
                         "type": "python",
                         "request": "launch",
                         "module": "enter-your-module-name-here",
                         "console": "integratedTerminal"
-                    }
-                },
-                {
-                    "label": "Python: Django",
-                    "description": "%python.snippet.launch.django.description%",
-                    "body": {
-                        "name": "Django",
+                    },
+                    {
+                        "name": "Python: Django",
                         "type": "python",
                         "request": "launch",
-                        "program": "^\"\\${workspaceFolder}/manage.py\"",
+                        "program": "${workspaceFolder}/manage.py",
+                        "console": "integratedTerminal",
                         "args": [
                             "runserver",
                             "--noreload",
                             "--nothreading"
                         ],
                         "django": true
-                    }
-                },
-                {
-                    "label": "Python: Flask",
-                    "description": "%python.snippet.launch.flask.description%",
-                    "body": {
-                        "name": "Flask",
+                    },
+                    {
+                        "name": "Python: Flask",
                         "type": "python",
                         "request": "launch",
                         "module": "flask",
                         "env": {
-                            "FLASK_APP": "app.py",
-                            "FLASK_ENV": "development",
-                            "FLASK_DEBUG": "0"
+                            "FLASK_APP": "app.py"
                         },
                         "args": [
                             "run",
@@ -590,352 +937,17 @@
                             "--no-reload"
                         ],
                         "jinja": true
-                    }
-                },
-                {
-                    "label": "Python: Gevent",
-                    "description": "%python.snippet.launch.gevent.description%",
-                    "body": {
-                        "name": "Gevent",
-                        "type": "python",
-                        "request": "launch",
-                        "program": "^\"\\${file}\"",
-                        "gevent": true
-                    }
-                },
-                {
-                    "label": "Python: PySpark",
-                    "description": "%python.snippet.launch.pyspark.description%",
-                    "body": {
-                        "name": "PySpark",
-                        "type": "python",
-                        "request": "launch",
-                        "osx": {
-                            "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit\""
-                        },
-                        "windows": {
-                            "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit.cmd\""
-                        },
-                        "linux": {
-                            "pythonPath": "^\"\\${env:SPARK_HOME}/bin/spark-submit\""
-                        },
-                        "program": "^\"\\${file}\""
-                    }
-                },
-                {
-                    "label": "Python: Watson",
-                    "description": "%python.snippet.launch.watson.description%",
-                    "body": {
-                        "name": "Watson",
-                        "type": "python",
-                        "request": "launch",
-                        "program": "^\"\\${workspaceFolder}/console.py\"",
-                        "args": [
-                            "dev",
-                            "runserver",
-                            "--noreload=True"
-                        ],
-                        "jinja": true
-                    }
-                },
-                {
-                    "label": "Python: Scrapy",
-                    "description": "%python.snippet.launch.scrapy.description%",
-                    "body": {
-                        "name": "Scrapy",
-                        "type": "python",
-                        "request": "launch",
-                        "module": "scrapy",
-                        "args": [
-                            "crawl",
-                            "specs",
-                            "-o",
-                            "bikes.json"
-                        ]
-                    }
-                },
-                {
-                    "label": "Python: Pyramid",
-                    "description": "%python.snippet.launch.pyramid.description%",
-                    "body": {
-                        "name": "Pyramid",
-                        "type": "python",
-                        "request": "launch",
-                        "args": [
-                            "^\"\\${workspaceFolder}/development.ini\""
-                        ],
-                        "pyramid": true,
-                        "jinja": true
-                    }
-                },
-                {
-                    "label": "Python: Attach",
-                    "description": "%python.snippet.launch.attach.description%",
-                    "body": {
-                        "name": "Attach (Remote Debug)",
-                        "type": "python",
-                        "request": "attach",
-                        "port": 5678,
-                        "host": "localhost"
-                    }
-                }
-            ],
-            "configurationAttributes": {
-                "launch": {
-                    "properties": {
-                        "module": {
-                            "type": "string",
-                            "description": "Name of the module to be debugged.",
-                            "default": ""
-                        },
-                        "program": {
-                            "type": "string",
-                            "description": "Absolute path to the program.",
-                            "default": "${file}"
-                        },
-                        "pythonPath": {
-                            "type": "string",
-                            "description": "Path (fully qualified) to python executable. Defaults to the value in settings.json",
-                            "default": "${config:python.pythonPath}"
-                        },
-                        "args": {
-                            "type": "array",
-                            "description": "Command line arguments passed to the program",
-                            "default": [],
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "stopOnEntry": {
-                            "type": "boolean",
-                            "description": "Automatically stop after launch.",
-                            "default": false
-                        },
-                        "showReturnValue": {
-                            "type": "boolean",
-                            "description": "Show return value of functions when stepping.",
-                            "default": false
-                        },
-                        "console": {
-                            "enum": [
-                                "none",
-                                "integratedTerminal",
-                                "externalTerminal"
-                            ],
-                            "description": "Where to launch the debug target: internal console, integrated terminal, or external terminal.",
-                            "default": "integratedTerminal"
-                        },
-                        "cwd": {
-                            "type": "string",
-                            "description": "Absolute path to the working directory of the program being debugged. Default is the root directory of the file (leave empty).",
-                            "default": "${workspaceFolder}"
-                        },
-                        "env": {
-                            "type": "object",
-                            "description": "Environment variables defined as a key value pair. Property ends up being the Environment Variable and the value of the property ends up being the value of the Env Variable.",
-                            "default": {}
-                        },
-                        "envFile": {
-                            "type": "string",
-                            "description": "Absolute path to a file containing environment variable definitions.",
-                            "default": "${workspaceFolder}/.env"
-                        },
-                        "port": {
-                            "type": "number",
-                            "description": "Debug port (default is 0, resulting in the use of a dynamic port).",
-                            "default": 0
-                        },
-                        "host": {
-                            "type": "string",
-                            "description": "IP address of the of the local debug server (default is localhost).",
-                            "default": "localhost"
-                        },
-                        "logToFile": {
-                            "type": "boolean",
-                            "description": "Enable logging of debugger events to a log file.",
-                            "default": false
-                        },
-                        "redirectOutput": {
-                            "type": "boolean",
-                            "description": "Redirect output.",
-                            "default": true
-                        },
-                        "debugStdLib": {
-                            "type": "boolean",
-                            "description": "Debug standard library code.",
-                            "default": false
-                        },
-                        "gevent": {
-                            "type": "boolean",
-                            "description": "Enable debugging of gevent monkey-patched code.",
-                            "default": false
-                        },
-                        "django": {
-                            "type": "boolean",
-                            "description": "Django debugging.",
-                            "default": false
-                        },
-                        "jinja": {
-                            "enum": [
-                                true,
-                                false,
-                                null
-                            ],
-                            "description": "Jinja template debugging (e.g. Flask).",
-                            "default": null
-                        },
-                        "sudo": {
-                            "type": "boolean",
-                            "description": "Running debug program under elevated permissions (on Unix).",
-                            "default": false
-                        },
-                        "pyramid": {
-                            "type": "boolean",
-                            "description": "Whether debugging Pyramid applications",
-                            "default": false
-                        },
-                        "subProcess": {
-                            "type": "boolean",
-                            "description": "Whether to enable Sub Process debugging",
-                            "default": false
-                        }
-                    }
-                },
-                "attach": {
-                    "required": [
-                        "port"
-                    ],
-                    "properties": {
-                        "port": {
-                            "type": "number",
-                            "description": "Debug port to attach",
-                            "default": 0
-                        },
-                        "host": {
-                            "type": "string",
-                            "description": "IP Address of the of remote server (default is localhost or use 127.0.0.1).",
-                            "default": "localhost"
-                        },
-                        "pathMappings": {
-                            "type": "array",
-                            "label": "Path mappings.",
-                            "items": {
-                                "type": "object",
-                                "label": "Path mapping",
-                                "required": [
-                                    "localRoot",
-                                    "remoteRoot"
-                                ],
-                                "properties": {
-                                    "localRoot": {
-                                        "type": "string",
-                                        "label": "Local source root.",
-                                        "default": "${workspaceFolder}"
-                                    },
-                                    "remoteRoot": {
-                                        "type": "string",
-                                        "label": "Remote source root.",
-                                        "default": ""
-                                    }
-                                }
-                            },
-                            "default": []
-                        },
-                        "logToFile": {
-                            "type": "boolean",
-                            "description": "Enable logging of debugger events to a log file.",
-                            "default": false
-                        },
-                        "redirectOutput": {
-                            "type": "boolean",
-                            "description": "Redirect output.",
-                            "default": true
-                        },
-                        "debugStdLib": {
-                            "type": "boolean",
-                            "description": "Debug standard library code.",
-                            "default": false
-                        },
-                        "django": {
-                            "type": "boolean",
-                            "description": "Django debugging.",
-                            "default": false
-                        },
-                        "jinja": {
-                            "enum": [
-                                true,
-                                false,
-                                null
-                            ],
-                            "description": "Jinja template debugging (e.g. Flask).",
-                            "default": null
-                        },
-                        "subProcess": {
-                            "type": "boolean",
-                            "description": "Whether to enable Sub Process debugging",
-                            "default": false
-                        }
-                    }
-                }
-            },
-            "initialConfigurations": [{
-                    "name": "Python: Current File (Integrated Terminal)",
-                    "type": "python",
-                    "request": "launch",
-                    "program": "${file}",
-                    "console": "integratedTerminal"
-                },
-                {
-                    "name": "Python: Attach",
-                    "type": "python",
-                    "request": "attach",
-                    "port": 5678,
-                    "host": "localhost"
-                },
-                {
-                    "name": "Python: Module",
-                    "type": "python",
-                    "request": "launch",
-                    "module": "enter-your-module-name-here",
-                    "console": "integratedTerminal"
-                },
-                {
-                    "name": "Python: Django",
-                    "type": "python",
-                    "request": "launch",
-                    "program": "${workspaceFolder}/manage.py",
-                    "console": "integratedTerminal",
-                    "args": [
-                        "runserver",
-                        "--noreload",
-                        "--nothreading"
-                    ],
-                    "django": true
-                },
-                {
-                    "name": "Python: Flask",
-                    "type": "python",
-                    "request": "launch",
-                    "module": "flask",
-                    "env": {
-                        "FLASK_APP": "app.py"
                     },
-                    "args": [
-                        "run",
-                        "--no-debugger",
-                        "--no-reload"
-                    ],
-                    "jinja": true
-                },
-                {
-                    "name": "Python: Current File (External Terminal)",
-                    "type": "python",
-                    "request": "launch",
-                    "program": "${file}",
-                    "console": "externalTerminal"
-                }
-            ]
-        }],
+                    {
+                        "name": "Python: Current File (External Terminal)",
+                        "type": "python",
+                        "request": "launch",
+                        "program": "${file}",
+                        "console": "externalTerminal"
+                    }
+                ]
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "Python Configuration",
@@ -1747,7 +1759,8 @@
                 }
             }
         },
-        "languages": [{
+        "languages": [
+            {
                 "id": "pip-requirements",
                 "aliases": [
                     "pip requirements",
@@ -1803,12 +1816,15 @@
                 ]
             }
         ],
-        "grammars": [{
-            "language": "pip-requirements",
-            "scopeName": "source.pip-requirements",
-            "path": "./syntaxes/pip-requirements.tmLanguage.json"
-        }],
-        "jsonValidation": [{
+        "grammars": [
+            {
+                "language": "pip-requirements",
+                "scopeName": "source.pip-requirements",
+                "path": "./syntaxes/pip-requirements.tmLanguage.json"
+            }
+        ],
+        "jsonValidation": [
+            {
                 "fileMatch": ".condarc",
                 "url": "./schemas/condarc.json"
             },
@@ -1821,7 +1837,8 @@
                 "url": "./schemas/conda-meta.json"
             }
         ],
-        "yamlValidation": [{
+        "yamlValidation": [
+            {
                 "fileMatch": ".condarc",
                 "url": "./schemas/condarc.json"
             },
